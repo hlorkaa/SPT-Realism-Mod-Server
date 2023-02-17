@@ -18,9 +18,7 @@
   "HighTierVoice": [
     "Bear_1",
     "Bear_2",
-    "Bear_3",
-    "Bear_1_Eng",
-    "Bear_2_Eng"
+    "Bear_3"
   ],
   "bearLO1": {
     "experience": {
@@ -31,10 +29,33 @@
     },
     "appearance": {
       "body": {
-        "5cc0858d14c02e000c6bea66": 1
+        "5cc0858d14c02e000c6bea66": 1,
+        "5d1f565786f7743f8362bcd5": 1,
+        "5fce3e0cfe40296c1d5fd782": 1,
+        "6033a31e9ec839204e6a2f3e": 1,
+        "5d1f564b86f7744bcb0acd16": 1,
+        "5fce3e47fe40296c1d5fd784": 1,
+        "617bca4b4013b06b0b78df2a": 1,
+        "5d1f566d86f7744bcd13459a": 1,
+        "5df89f1f86f77412631087ea": 1,
+        "5e9d9fa986f774054d6b89f2": 1,
+        "5e4bb31586f7740695730568": 1,
+        "5f5e401747344c2e4f6c42c5": 1,
+        "5cdea33e7d6c8b0474535dac": 1
       },
       "feet": {
-        "5cc085bb14c02e000e67a5c5": 1
+        "5cc085bb14c02e000e67a5c5": 1,
+        "5d1f588e86f7744bcc048753": 1,
+        "5e9dc97c86f774054c19ac9a": 1,
+        "5e4bb39386f774067f79de05": 1,
+        "5f5e40400bc58666c37e7819": 1,
+        "5d1f58bd86f7744bce0ee9ef": 1,
+        "6033a3d8ed2e0509b15f9031": 1,
+        "5fce3e965a9f8c40685693bc": 1,
+        "5d1f58a086f7743f8362bcd9": 1,
+        "5d1f58ab86f7743014162042": 1,
+        "617be9e4e02b3b3fa50fa8f2": 1,
+        "5df89f8f86f77412672a1e38": 1
       }
     },
     "inventory": {
@@ -1377,7 +1398,7 @@
         "FaceCover": 35,
         "ArmorVest": 60,
         "Eyewear": 50,
-        "ArmBand": 100,
+        "ArmBand": 0,
         "TacticalVest": 100,
         "Backpack": 55,
         "FirstPrimaryWeapon": 75,
@@ -1476,22 +1497,33 @@
     },
     "appearance": {
       "body": {
-        "6377266693a3b4967208e42b": 1,
-        "6295e698e9de5e7b3751c47a": 1,
+        "5cc0858d14c02e000c6bea66": 1,
+        "5d1f565786f7743f8362bcd5": 1,
+        "5fce3e0cfe40296c1d5fd782": 1,
         "6033a31e9ec839204e6a2f3e": 1,
         "5d1f564b86f7744bcb0acd16": 1,
-        "5cc0858d14c02e000c6bea66": 1,
-        "5d1f567786f7744bcc04874f": 1,
-        "617bca4b4013b06b0b78df2a": 1
+        "5fce3e47fe40296c1d5fd784": 1,
+        "617bca4b4013b06b0b78df2a": 1,
+        "5d1f566d86f7744bcd13459a": 1,
+        "5df89f1f86f77412631087ea": 1,
+        "5e9d9fa986f774054d6b89f2": 1,
+        "5e4bb31586f7740695730568": 1,
+        "5f5e401747344c2e4f6c42c5": 1,
+        "5cdea33e7d6c8b0474535dac": 1
       },
       "feet": {
-        "5d1f58bd86f7744bce0ee9ef": 1,
+        "5cc085bb14c02e000e67a5c5": 1,
         "5d1f588e86f7744bcc048753": 1,
-        "6295e63de08ed747e64ae991": 1,
+        "5e9dc97c86f774054c19ac9a": 1,
+        "5e4bb39386f774067f79de05": 1,
+        "5f5e40400bc58666c37e7819": 1,
+        "5d1f58bd86f7744bce0ee9ef": 1,
         "6033a3d8ed2e0509b15f9031": 1,
+        "5fce3e965a9f8c40685693bc": 1,
         "5d1f58a086f7743f8362bcd9": 1,
-        "5df89f8f86f77412672a1e38": 1,
-        "5cc085bb14c02e000e67a5c5": 1
+        "5d1f58ab86f7743014162042": 1,
+        "617be9e4e02b3b3fa50fa8f2": 1,
+        "5df89f8f86f77412672a1e38": 1
       }
     },
     "inventory": {
@@ -3117,7 +3149,7 @@
         "FaceCover": 40,
         "ArmorVest": 90,
         "Eyewear": 50,
-        "ArmBand": 100,
+        "ArmBand": 0,
         "TacticalVest": 100,
         "Backpack": 60,
         "FirstPrimaryWeapon": 95,
@@ -3216,28 +3248,33 @@
     },
     "appearance": {
       "body": {
-        "6377266693a3b4967208e42b": 1,
-        "6295e698e9de5e7b3751c47a": 1,
+        "5cc0858d14c02e000c6bea66": 1,
+        "5d1f565786f7743f8362bcd5": 1,
+        "5fce3e0cfe40296c1d5fd782": 1,
         "6033a31e9ec839204e6a2f3e": 1,
         "5d1f564b86f7744bcb0acd16": 1,
         "5fce3e47fe40296c1d5fd784": 1,
-        "5cc0858d14c02e000c6bea66": 1,
-        "5d1f567786f7744bcc04874f": 1,
         "617bca4b4013b06b0b78df2a": 1,
+        "5d1f566d86f7744bcd13459a": 1,
         "5df89f1f86f77412631087ea": 1,
-        "5e4bb31586f7740695730568": 1
+        "5e9d9fa986f774054d6b89f2": 1,
+        "5e4bb31586f7740695730568": 1,
+        "5f5e401747344c2e4f6c42c5": 1,
+        "5cdea33e7d6c8b0474535dac": 1
       },
       "feet": {
-        "6377315993a3b4967208e437": 1,
-        "5d1f58bd86f7744bce0ee9ef": 1,
-        "5d1f588e86f7744bcc048753": 1,
-        "6295e63de08ed747e64ae991": 1,
-        "6033a3d8ed2e0509b15f9031": 1,
-        "5d1f58a086f7743f8362bcd9": 1,
-        "617be9e4e02b3b3fa50fa8f2": 1,
-        "5df89f8f86f77412672a1e38": 1,
         "5cc085bb14c02e000e67a5c5": 1,
-        "5e9dc97c86f774054c19ac9a": 1
+        "5d1f588e86f7744bcc048753": 1,
+        "5e9dc97c86f774054c19ac9a": 1,
+        "5e4bb39386f774067f79de05": 1,
+        "5f5e40400bc58666c37e7819": 1,
+        "5d1f58bd86f7744bce0ee9ef": 1,
+        "6033a3d8ed2e0509b15f9031": 1,
+        "5fce3e965a9f8c40685693bc": 1,
+        "5d1f58a086f7743f8362bcd9": 1,
+        "5d1f58ab86f7743014162042": 1,
+        "617be9e4e02b3b3fa50fa8f2": 1,
+        "5df89f8f86f77412672a1e38": 1
       }
     },
     "inventory": {
@@ -4882,7 +4919,7 @@
         "FaceCover": 60,
         "ArmorVest": 100,
         "Eyewear": 70,
-        "ArmBand": 100,
+        "ArmBand": 0,
         "TacticalVest": 100,
         "Backpack": 70,
         "FirstPrimaryWeapon": 100,
@@ -4981,23 +5018,33 @@
     },
     "appearance": {
       "body": {
+        "5cc0858d14c02e000c6bea66": 1,
         "5d1f565786f7743f8362bcd5": 1,
         "5fce3e0cfe40296c1d5fd782": 1,
-        "5d1f568486f7744bca3f0b98": 1,
+        "6033a31e9ec839204e6a2f3e": 1,
+        "5d1f564b86f7744bcb0acd16": 1,
+        "5fce3e47fe40296c1d5fd784": 1,
+        "617bca4b4013b06b0b78df2a": 1,
         "5d1f566d86f7744bcd13459a": 1,
         "5df89f1f86f77412631087ea": 1,
         "5e9d9fa986f774054d6b89f2": 1,
         "5e4bb31586f7740695730568": 1,
-        "5f5e401747344c2e4f6c42c5": 1
+        "5f5e401747344c2e4f6c42c5": 1,
+        "5cdea33e7d6c8b0474535dac": 1
       },
       "feet": {
-        "5f5e40400bc58666c37e7819": 1,
-        "5e4bb39386f774067f79de05": 1,
+        "5cc085bb14c02e000e67a5c5": 1,
+        "5d1f588e86f7744bcc048753": 1,
         "5e9dc97c86f774054c19ac9a": 1,
-        "5d1f58ab86f7743014162042": 1,
-        "5d1f58cb86f7744bca3f0b9a": 1,
+        "5e4bb39386f774067f79de05": 1,
+        "5f5e40400bc58666c37e7819": 1,
+        "5d1f58bd86f7744bce0ee9ef": 1,
+        "6033a3d8ed2e0509b15f9031": 1,
         "5fce3e965a9f8c40685693bc": 1,
-        "6377315993a3b4967208e437": 1
+        "5d1f58a086f7743f8362bcd9": 1,
+        "5d1f58ab86f7743014162042": 1,
+        "617be9e4e02b3b3fa50fa8f2": 1,
+        "5df89f8f86f77412672a1e38": 1
       }
     },
     "inventory": {
@@ -6946,7 +6993,7 @@
         "FaceCover": 70,
         "ArmorVest": 100,
         "Eyewear": 70,
-        "ArmBand": 100,
+        "ArmBand": 0,
         "TacticalVest": 100,
         "Backpack": 90,
         "FirstPrimaryWeapon": 100,

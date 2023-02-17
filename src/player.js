@@ -221,9 +221,9 @@ class Player {
             this.globalDB.Health.Effects.Dehydration.DefaultDelay = 60;
         }
         if (this.modConfig.realistic_ballistics == true) {
-            this.globalDB.LegsOverdamage *= 1.75;
-            this.globalDB.HandsOverdamage *= 0.8;
-            this.globalDB.StomachOverdamage *= 1.85;
+            this.globalDB.LegsOverdamage *= 0.7;
+            this.globalDB.HandsOverdamage *= 0.5;
+            this.globalDB.StomachOverdamage *= 1;
         }
         if (this.modConfig.realistic_player_health == true) {
             const health = this.globalDB.Health.Effects;
@@ -232,7 +232,9 @@ class Player {
             this.debuffMul(health.Wound.ThresholdMin, mult);
             this.debuffMul(health.Wound.ThresholdMax, mult);
             health.LightBleeding.HealthLoopTime = 10;
-            health.LightBleeding.DamageHealth = 0.5;
+            health.LightBleeding.DamageHealth = 0.8;
+            health.HeavyBleeding.HealthLoopTime = 2;
+            health.HeavyBleeding.DamageHealth = 1;
             this.globalDB.Health.Effects.Fracture.BulletHitProbability.Threshold /= mult;
             this.globalDB.Health.Effects.Fracture.BulletHitProbability.K *= Math.sqrt(mult);
             this.debuffMul(health.Fracture.FallingProbability, 1);

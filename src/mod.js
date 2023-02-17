@@ -614,31 +614,31 @@ class Main {
     }
     setBossSpawnChance(mapDB, level) {
         if (level >= 0 && level < 5) {
-            this.bossSpawnHelper(mapDB, 0.01);
+            this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 5 && level < 10) {
-            this.bossSpawnHelper(mapDB, 0.1);
+            this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 10 && level < 15) {
-            this.bossSpawnHelper(mapDB, 0.2);
+            this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 15 && level < 20) {
-            this.bossSpawnHelper(mapDB, 0.4);
+            this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 20 && level < 25) {
-            this.bossSpawnHelper(mapDB, 0.6);
+            this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 25 && level < 30) {
-            this.bossSpawnHelper(mapDB, 0.8);
+            this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 30 && level < 35) {
             this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 35 && level < 40) {
-            this.bossSpawnHelper(mapDB, 1.1);
+            this.bossSpawnHelper(mapDB, 1);
         }
         if (level >= 40) {
-            this.bossSpawnHelper(mapDB, 1.2);
+            this.bossSpawnHelper(mapDB, 1);
         }
     }
     bossSpawnHelper(mapDB, chanceMulti) {
@@ -773,7 +773,7 @@ class Main {
                 bots.scavLoad2();
             }
             if (tier == 3) {
-                bots.scavLoad3();
+                bots.scavLoad2();
             }
             if (tier == 4) {
                 bots.scavLoad3();

@@ -135,19 +135,19 @@ class Bots {
             if (botType.skills?.Common !== undefined) {
                 if (botType.skills.Common["Vitality"] !== undefined) {
                     botType.skills.Common["Vitality"].max = 5100;
-                    botType.skills.Common["Vitality"].min = 5100;
+                    botType.skills.Common["Vitality"].min = 0;
                 }
                 else {
                     botType.skills.Common["Vitality"] = {};
                     botType.skills.Common["Vitality"].max = 5100;
-                    botType.skills.Common["Vitality"].min = 5100;
+                    botType.skills.Common["Vitality"].min = 0;
                 }
             }
             else {
                 botType.skills.Common = [];
                 botType.skills.Common["Vitality"] = {};
                 botType.skills.Common["Vitality"].max = 5100;
-                botType.skills.Common["Vitality"].min = 5100;
+                botType.skills.Common["Vitality"].min = 0;
             }
         }
         this.setBotHPHelper(this.arrays.standardBotHPArr);
@@ -178,6 +178,10 @@ class Bots {
                 }
             }
             botArr[bot].health.Temperature = botHealth.health.Temperature;
+            botArr[bot].health.LightBleeding.HealthLoopTime = 10;
+            botArr[bot].health.LightBleeding.DamageHealth = 0.8;
+            botArr[bot].health.HeavyBleeding.HealthLoopTime = 2;
+            botArr[bot].health.HeavyBleeding.DamageHealth = 1;
         }
     }
     //this thing is fucking demonic and cursed

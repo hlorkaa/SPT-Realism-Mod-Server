@@ -11,16 +11,16 @@
           "max": 120
         },
         "Stomach": {
-          "min": 120,
-          "max": 120
+          "min": 80,
+          "max": 80
         },
         "LeftArm": {
-          "min": 65,
-          "max": 65
+          "min": 45,
+          "max": 45
         },
         "RightArm": {
-          "min": 65,
-          "max": 65
+          "min": 45,
+          "max": 45
         },
         "LeftLeg": {
           "min": 60,
@@ -49,16 +49,16 @@
           "max": 120
         },
         "Stomach": {
-          "min": 120,
-          "max": 120
+          "min": 80,
+          "max": 80
         },
         "LeftArm": {
-          "min": 65,
-          "max": 65
+          "min": 45,
+          "max": 45
         },
         "RightArm": {
-          "min": 65,
-          "max": 65
+          "min": 45,
+          "max": 45
         },
         "LeftLeg": {
           "min": 60,
@@ -79,16 +79,16 @@
           "max": 120
         },
         "Stomach": {
-          "min": 120,
-          "max": 120
+          "min": 80,
+          "max": 80
         },
         "LeftArm": {
-          "min": 65,
-          "max": 65
+          "min": 45,
+          "max": 45
         },
         "RightArm": {
-          "min": 65,
-          "max": 65
+          "min": 45,
+          "max": 45
         },
         "LeftLeg": {
           "min": 60,
