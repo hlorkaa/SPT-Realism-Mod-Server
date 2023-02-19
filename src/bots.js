@@ -179,8 +179,8 @@ class Bots {
             }
             botArr[bot].health.Temperature = botHealth.health.Temperature;
             botArr[bot].health.LightBleeding.HealthLoopTime = 10;
-            botArr[bot].health.LightBleeding.DamageHealth = 0.8;
-            botArr[bot].health.HeavyBleeding.HealthLoopTime = 2;
+            botArr[bot].health.LightBleeding.DamageHealth = 1;
+            botArr[bot].health.HeavyBleeding.HealthLoopTime = 3;
             botArr[bot].health.HeavyBleeding.DamageHealth = 1;
         }
     }
