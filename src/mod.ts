@@ -105,6 +105,8 @@ import { info } from "console";
 import { url } from "inspector";
 import { LocationGenerator } from "@spt-aki/generators/LocationGenerator";
 import { LootGenerator } from "@spt-aki/generators/LootGenerator";
+import { OldAmmo } from "./ammo_old";
+import { OldArmor } from "./armor_old";
 
 const fs = require('fs');
 const custFleaBlacklist = require("../db/traders/ragfair/blacklist.json");
@@ -115,6 +117,8 @@ const custProfile = require("../db/profile/profile.json");
 const modConfig = require("../config/config.json");
 
 const pmcTypes = require("../db/bots/pmcTypes.json");
+
+var clientValidateCount = 0;
 
 class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiLoadModAsync {
 
@@ -315,7 +319,11 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
                             }
                             this.checkForEvents(logger, seasonalEventsService);
 
-                            randomizeTraderAssort.adjustTraderStockAtServerStart();
+                            if(clientValidateCount === 0){
+                                randomizeTraderAssort.adjustTraderStockAtServerStart();
+                                logger.info("Realism Mod: Trader Stock Adjusted");
+                            }
+                            clientValidateCount += 1;
                             
                             if (modConfig.tiered_flea == true) {
                                 this.updateFlea(logger, tieredFlea, ragfairOfferGenerator, container, arrays, level);
@@ -580,6 +588,8 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
         const helper = new Helper(tables, arrays);
         const ammo = new Ammo(logger, tables, modConfig);
         const armor = new Armor(logger, tables, modConfig);
+        const oldAmmo = new OldAmmo(logger, tables, modConfig);
+        const oldArmor = new OldArmor(logger, tables, modConfig);
         const attachBase = new AttachmentBase(logger, tables, arrays, modConfig);
         const attachStats = new AttachmentStats(logger, tables, modConfig, arrays);
         const bots = new Bots(logger, tables, configServer, modConfig, arrays, helper);
@@ -660,10 +670,15 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
 
 
 
-        if (modConfig.realistic_ballistics == true) {
+        if (modConfig.realistic_ballistics == true && modConfig.old_ballistics == false) {
             ammo.loadAmmoStats();
             armor.loadArmor();
             bots.setBotHealth();
+        }
+
+        if(modConfig.old_ballistics == true && modConfig.realistic_ballistics  == false){
+            oldAmmo.loadAmmoStatsOld();
+            oldArmor.loadArmorOld();
         }
 
         bots.botHpMulti();
@@ -834,28 +849,34 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
             this.bossSpawnHelper(mapDB, 0.01);
         }
         if (level >= 5 && level < 10) {
-            this.bossSpawnHelper(mapDB, 0.1);
+            this.bossSpawnHelper(mapDB, 0.05);
         }
         if (level >= 10 && level < 15) {
-            this.bossSpawnHelper(mapDB, 0.2);
+            this.bossSpawnHelper(mapDB, 0.1);
         }
         if (level >= 15 && level < 20) {
-            this.bossSpawnHelper(mapDB, 0.4);
+            this.bossSpawnHelper(mapDB, 0.2);
         }
         if (level >= 20 && level < 25) {
-            this.bossSpawnHelper(mapDB, 0.6);
+            this.bossSpawnHelper(mapDB, 0.4);
         }
         if (level >= 25 && level < 30) {
-            this.bossSpawnHelper(mapDB, 0.8);
+            this.bossSpawnHelper(mapDB, 0.6);
         }
         if (level >= 30 && level < 35) {
-            this.bossSpawnHelper(mapDB, 1);
+            this.bossSpawnHelper(mapDB, 0.8);
         }
         if (level >= 35 && level < 40) {
+            this.bossSpawnHelper(mapDB, 0.9);
+        }
+        if (level >= 40 && level < 45) {
+            this.bossSpawnHelper(mapDB, 1);
+        }
+        if (level >= 45 && level < 50) {
             this.bossSpawnHelper(mapDB, 1.1);
         }
-        if (level >= 40) {
-            this.bossSpawnHelper(mapDB, 1.2);
+        if (level >= 45 && level < 50) {
+            this.bossSpawnHelper(mapDB, 1.1);
         }
     }
 

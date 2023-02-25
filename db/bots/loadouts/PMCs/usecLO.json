@@ -1457,9 +1457,9 @@
     "chances": {
       "equipment": {
         "Headwear": 75,
-        "Earpiece": 20,
+        "Earpiece": 35,
         "FaceCover": 35,
-        "ArmorVest": 60,
+        "ArmorVest": 70,
         "Eyewear": 50,
         "ArmBand": 0,
         "TacticalVest": 100,
@@ -3474,10 +3474,10 @@
     },
     "chances": {
       "equipment": {
-        "Headwear": 90,
-        "Earpiece": 30,
+        "Headwear": 100,
+        "Earpiece": 50,
         "FaceCover": 40,
-        "ArmorVest": 90,
+        "ArmorVest": 100,
         "Eyewear": 50,
         "ArmBand": 0,
         "TacticalVest": 100,
@@ -6275,7 +6275,6 @@
         "Earpiece": 70,
         "FaceCover": 50,
         "ArmorVest": 50,
-        "Eyewear": 70,
         "ArmBand": 0,
         "TacticalVest": 100,
         "Backpack": 80,

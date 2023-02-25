@@ -148,10 +148,15 @@ export class JsonHandler {
                     serverItem._props.DurabilityBurnModificator = fileItem.DurabilityBurnModificator;
                     serverItem._props.HasShoulderContact = fileItem.HasShoulderContact;
                     serverItem._props.BlocksFolding = fileItem.BlocksFolding;
-                    serverItem._props.Velocity = fileItem.Velocity;
                     serverItem._props.Weight = fileItem.Weight;
                     serverItem._props.ShotgunDispersion = fileItem.ShotgunDispersion;
                     serverItem._props.Loudness = fileItem.Loudness;
+
+                    
+                    if(modConfig.realistic_ballistics == true){
+                        serverItem._props.Velocity = fileItem.Velocity;
+                    }
+        
 
                     if (fileItem.ModType === "Stock") {
                         serverItem._parent = "55818a594bdc2db9688b456a";
@@ -182,6 +187,10 @@ export class JsonHandler {
                         serverItem._props.CoolFactorGun = fileItem.CoolFactorGun;
                         serverItem._props.CoolFactorGunMods = fileItem.CoolFactorGunMods;
                     }
+
+                    if(modConfig.realistic_ballistics == true){
+                        serverItem._props.Velocity = fileItem.Velocity;
+                    }
         
                     if (modConfig.recoil_attachment_overhaul == true && modConfig.legacy_recoil_changes != true && ConfigChecker.dllIsPresent == true) {
                         serverItem._props.Ergonomics = fileItem.Ergonomics;
@@ -200,7 +209,6 @@ export class JsonHandler {
                         serverItem._props.HipAccuracyRestorationSpeed = fileItem.HipAccuracyRestorationSpeed;
                         serverItem._props.HipInnaccuracyGain = fileItem.HipInnaccuracyGain;
                         serverItem._props.ShotgunDispersion = fileItem.ShotgunDispersion;
-                        serverItem._props.Velocity = fileItem.Velocity;
                         serverItem._props.Weight = fileItem.Weight;
                         serverItem._props.bFirerate = fileItem.AutoROF;
                         serverItem._props.SingleFireRate = fileItem.SemiROF;
@@ -212,7 +220,7 @@ export class JsonHandler {
 
                     var weapPropertyValues = ["SPTRM", fileItem?.WeapType?.toString() || "undefined", fileItem?.BaseTorque?.toString() || "0", fileItem?.HasShoulderContact?.toString() || "false", fileItem?.BaseReloadSpeedMulti?.toString() || "1", fileItem?.OperationType?.toString() || "undefined", fileItem?.WeapAccuracy?.toString() || "0",
                         fileItem?.RecoilDamping?.toString() || "0.7", fileItem?.RecoilHandDamping?.toString() || "0.65", fileItem?.WeaponAllowADS?.toString() || "false", fileItem?.BaseChamberSpeedMulti?.toString() || "1", fileItem?.MaxChamberSpeed?.toString() || "1.5", fileItem?.MinChamberSpeed?.toString() || "0.7", fileItem?.IsManuallyOperated?.toString() || "false",
-                        fileItem?.MaxReloadSpeed?.toString() || "1.2", fileItem?.MinReloadSpeed?.toString() ||  "0.7"
+                        fileItem?.MaxReloadSpeed?.toString() || "1.2", fileItem?.MinReloadSpeed?.toString() ||  "0.7", fileItem?.BaseChamberCheckSpeed?.toString() ||  "1", fileItem?.BaseFixSpeed?.toString() ||  "1"
                     ];
 
                     var combinedArr = weapPropertyValues.concat(serverConfItems)
