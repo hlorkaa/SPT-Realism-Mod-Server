@@ -6303,9 +6303,10 @@
     "chances": {
       "equipment": {
         "Headwear": 80,
-        "Earpiece": 70,
-        "FaceCover": 50,
+        "Earpiece": 90,
+        "FaceCover": 60,
         "ArmorVest": 50,
+        "Eyewear": 60,
         "ArmBand": 0,
         "TacticalVest": 100,
         "Backpack": 80,
@@ -6374,7 +6375,7 @@
           "max": 2
         },
         "drugs": {
-          "min": 1,
+          "min": 0,
           "max": 1
         },
         "stims": {
@@ -6382,7 +6383,7 @@
           "max": 1
         },
         "looseLoot": {
-          "min": 5,
+          "min": 0,
           "max": 10
         },
         "magazines": {
