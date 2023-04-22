@@ -17,6 +17,8 @@ const helmetTemplates = require("../db/templates/gear/" + `${presetPath}` + "/he
 const armorVestsTemplates = require("../db/templates/gear/" + `${presetPath}` + "/armorVestsTemplates.json");
 const armorMasksTemplates = require("../db/templates/gear/" + `${presetPath}` + "/armorMasksTemplates.json");
 const chestrigTemplates = require("../db/templates/gear/" + `${presetPath}` + "/chestrigTemplates.json");
+const headsetTemplates = require("../db/templates/gear/" + `${presetPath}` + "/headsetTemplates.json");
+const cosmeticsTemplates = require("../db/templates/gear/" + `${presetPath}` + "/cosmeticsTemplates.json");
 
 
 const ammoTemplates = require("../db/templates/ammo/ammoTemplates.json");
@@ -70,19 +72,26 @@ export class CodeGen {
         for (let i in this.itemDB) {
             let serverItem = this.itemDB[i];
             if (serverItem._parent === ParentClasses.CHESTRIG && serverItem._props.armorClass > 0) {
-                this.itemWriteToFile(armorChestrigTemplates, "armorChestrigTemplates", i, serverItem, "armor", this.assignJSONToArmor, null, false);
+                this.itemWriteToFile(armorChestrigTemplates, "armorChestrigTemplates", i, serverItem, "gear", this.assignJSONToGear, null, false);
             }
             if (serverItem._parent === ParentClasses.ARMOREDEQUIPMENT && serverItem._props.armorClass > 0) {
-                this.itemWriteToFile(armorComponentsTemplates, "armorComponentsTemplates", i, serverItem, "armor", this.assignJSONToArmor, null, false);
+                this.itemWriteToFile(armorComponentsTemplates, "armorComponentsTemplates", i, serverItem, "gear", this.assignJSONToGear, null, false);
             }
             if (serverItem._parent === ParentClasses.HEADWEAR && serverItem._props.armorClass > 0) {
-                this.itemWriteToFile(helmetTemplates, "helmetTemplates", i, serverItem, "armor", this.assignJSONToArmor, null, false);
+                this.itemWriteToFile(helmetTemplates, "helmetTemplates", i, serverItem, "gear", this.assignJSONToGear, null, false);
             }
             if (serverItem._parent === ParentClasses.ARMORVEST && serverItem._props.armorClass > 0) {
-                this.itemWriteToFile(armorVestsTemplates, "armorVestsTemplates", i, serverItem, "armor", this.assignJSONToArmor, null, false);
+                this.itemWriteToFile(armorVestsTemplates, "armorVestsTemplates", i, serverItem, "gear", this.assignJSONToGear, null, false);
             }
             if (serverItem._parent === ParentClasses.CHESTRIG && serverItem._props.armorClass === 0) {
                 this.itemWriteToFile(chestrigTemplates, "chestrigTemplates", i, serverItem, "gear", this.assignJSONToGear, null, false);
+            }
+            if (serverItem._parent === ParentClasses.HEADSET) {
+                this.itemWriteToFile(headsetTemplates, "headsetTemplates", i, serverItem, "gear", this.assignJSONToGear, null, false);
+            }
+            if((serverItem._parent === ParentClasses.HEADWEAR || serverItem._parent === ParentClasses.FACECOVER) && serverItem._props.armorClass <= 1)
+            {
+                this.itemWriteToFile(cosmeticsTemplates, "cosmeticsTemplates", i, serverItem, "gear", this.assignJSONToGear, null, false);
             }
         }
     }
@@ -225,7 +234,6 @@ export class CodeGen {
         else{
             this.helper.saveToJSONFile(filePathObj, `db/templates/${folderStr}/${fileStr}.json`);
         }
-   
     }
 
     private assignJSONToAmmo(serverItem: ITemplateItem, fileItem: any) {
@@ -248,37 +256,6 @@ export class CodeGen {
         return item;
     }
 
-
-    private assignJSONToArmor(serverItem: ITemplateItem, fileItem: any) {
-
-        if (fileItem) {
-            fileItem;
-            return fileItem;
-        }
-
-        let ItemID = serverItem._id;
-        let Name = serverItem._name;
-        let AllowADS = true;
-        let LoyaltyLevel = 2;
-        let ArmorClass = "";
-        let CanSpall = false;
-        let SpallReduction = 1;
-        let ReloadSpeedMulti = 1;
-
-        let item = {
-            ItemID,
-            Name,
-            AllowADS,
-            LoyaltyLevel,
-            ArmorClass,
-            CanSpall,
-            SpallReduction,
-            ReloadSpeedMulti
-        };
-
-        return item;
-    }
-
     private assignJSONToGear(serverItem: ITemplateItem, fileItem: any) {
 
         if (fileItem) {
@@ -291,13 +268,25 @@ export class CodeGen {
         let AllowADS = true;
         let LoyaltyLevel = 2;
         let ReloadSpeedMulti = 1;
+        let MinPen = 50;
+        let MinVelocity = 500;
+        let MinKE = 2000;
+        let ArmorClass = "";
+        let CanSpall = false;
+        let SpallReduction = 1;
+        let BlocksMouth = false;
+        let HasSideArmor = false;
+        let HasStomachArmor = false;
+        let HasNeckArmor = false;
+        let dB = 0;
 
         let item = {
             ItemID,
             Name,
             AllowADS,
             LoyaltyLevel,
-            ReloadSpeedMulti
+            ReloadSpeedMulti,
+            BlocksMouth
         };
 
         return item;
@@ -429,7 +418,7 @@ export class CodeGen {
         let ModMalfunctionChance = 0;
         let ReloadSpeed = 0;
         let AimSpeed = 0;
-        let Length = 0;
+        let Convergence = 0;
         let CanCycleSubs = false;
         let RecoilAngle = 0;
         let StockAllowADS = false;
@@ -478,7 +467,8 @@ export class CodeGen {
                 Weight,
                 ModShotDispersion,
                 Loudness,
-                MalfChance
+                MalfChance,
+                Convergence
             };
             return item;
         }
@@ -493,7 +483,7 @@ export class CodeGen {
                 AutoROF,
                 SemiROF,
                 ModMalfunctionChance,
-                Length,
+                Convergence,
                 Accuracy,
                 CenterOfImpact,
                 HeatFactor,
@@ -677,7 +667,6 @@ export class CodeGen {
                 Dispersion,
                 AimSpeed,
                 ChamberSpeed,
-                Length,
                 Ergonomics,
                 Accuracy,
                 HeatFactor,
@@ -713,7 +702,6 @@ export class CodeGen {
                 ReloadSpeed,
                 AimSpeed,
                 ChamberSpeed,
-                Length,
                 CanCycleSubs,
                 Ergonomics,
                 Accuracy,

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonHandler = void 0;
-const enums_1 = require("./enums");
 const helper_1 = require("./helper");
 const modConfig = require("../config/config.json");
 const weapPath = modConfig.weap_preset;
@@ -13,6 +12,8 @@ const helmetTemplates = require("../db/templates/gear/" + `${gearPath}` + "/helm
 const armorVestsTemplates = require("../db/templates/gear/" + `${gearPath}` + "/armorVestsTemplates.json");
 const armorMasksTemplates = require("../db/templates/gear/" + `${gearPath}` + "/armorMasksTemplates.json");
 const chestrigTemplates = require("../db/templates/gear/" + `${gearPath}` + "/chestrigTemplates.json");
+const headsetTemplates = require("../db/templates/gear/" + `${gearPath}` + "/headsetTemplates.json");
+const cosmeticsTemplates = require("../db/templates/gear/" + `${gearPath}` + "/cosmeticsTemplates.json");
 const ammoTemplates = require("../db/templates/ammo/ammoTemplates.json");
 const MuzzleDeviceTemplates = require("../db/templates/attatchments/" + `${attPath}` + "/MuzzleDeviceTemplates.json");
 const BarrelTemplates = require("../db/templates/attatchments/" + `${attPath}` + "/BarrelTemplates.json");
@@ -88,15 +89,15 @@ class JsonHandler {
     pushArmorToServer() {
         for (let i in this.itemDB) {
             let serverItem = this.itemDB[i];
-            if (serverItem._props?.armorClass !== null && serverItem._props?.armorClass > 0) {
-                this.callHelper(armorChestrigTemplates, serverItem, this.armorPusher);
-                this.callHelper(armorComponentsTemplates, serverItem, this.armorPusher);
-                this.callHelper(helmetTemplates, serverItem, this.armorPusher);
-                this.callHelper(armorVestsTemplates, serverItem, this.armorPusher);
-                this.callHelper(armorMasksTemplates, serverItem, this.armorPusher);
-            }
-            if (serverItem._parent === enums_1.ParentClasses.CHESTRIG) {
-                this.callHelper(chestrigTemplates, serverItem, this.armorPusher);
+            if (serverItem._props?.armorClass !== null && serverItem._props?.armorClass !== undefined) {
+                this.callHelper(armorChestrigTemplates, serverItem, this.armorPusherHelper);
+                this.callHelper(armorComponentsTemplates, serverItem, this.armorPusherHelper);
+                this.callHelper(helmetTemplates, serverItem, this.armorPusherHelper);
+                this.callHelper(armorVestsTemplates, serverItem, this.armorPusherHelper);
+                this.callHelper(armorMasksTemplates, serverItem, this.armorPusherHelper);
+                this.callHelper(chestrigTemplates, serverItem, this.armorPusherHelper);
+                this.callHelper(headsetTemplates, serverItem, this.armorPusherHelper);
+                this.callHelper(cosmeticsTemplates, serverItem, this.armorPusherHelper);
             }
         }
     }
@@ -106,10 +107,12 @@ class JsonHandler {
             funPusherHelper(serverItem, fileItem);
         }
     }
-    armorPusher(serverItem, fileItem) {
+    armorPusherHelper(serverItem, fileItem) {
         if (serverItem._id === fileItem.ItemID) {
             var serverConfItems = serverItem._props.ConflictingItems;
-            var armorPropertyValues = ["SPTRM", fileItem?.AllowADS?.toString() || "true", fileItem?.ArmorClass || "0" || "true", fileItem?.CanSpall || "false", fileItem?.SpallReduction || "1", fileItem?.ReloadSpeedMulti || "1"];
+            var armorPropertyValues = ["SPTRM", fileItem?.AllowADS?.toString() || "true", fileItem?.ArmorClass?.toString() || "Unclassified", fileItem?.CanSpall?.toString() || "false", fileItem?.SpallReduction?.toString() || "1", fileItem?.ReloadSpeedMulti?.toString() || "1",
+                fileItem?.MinVelocity?.toString() || "500", fileItem?.MinKE?.toString() || "2000", fileItem?.MinPen?.toString() || "50", fileItem?.BlocksMouth?.toString() || "false", fileItem?.HasSideArmor?.toString() || "false", fileItem?.HasStomachArmor?.toString() || "false",
+                fileItem?.HasHitSecondaryArmor?.toString() || "false", fileItem?.HasNeckArmor?.toString() || "false", fileItem?.dB?.toString() || "1"];
             var combinedArr = armorPropertyValues.concat(serverConfItems);
             serverItem._props.ConflictingItems = combinedArr;
         }
@@ -141,7 +144,7 @@ class JsonHandler {
                     }
                     var modPropertyValues = ["SPTRM", fileItem?.ModType?.toString() || "undefined", fileItem?.VerticalRecoil?.toString() || "0", fileItem?.HorizontalRecoil?.toString() || "0", fileItem?.Dispersion?.toString() || "0", fileItem?.CameraRecoil?.toString() || "0",
                         fileItem?.AutoROF?.toString() || "0", fileItem?.SemiROF?.toString() || "0", fileItem?.ModMalfunctionChance?.toString() || "0", fileItem?.ReloadSpeed?.toString() || "0", fileItem?.AimSpeed?.toString() || "0", fileItem?.ChamberSpeed?.toString() || "0",
-                        fileItem?.Length?.toString() || "0", fileItem?.CanCycleSubs?.toString() || "false", fileItem?.RecoilAngle?.toString() || "0", fileItem?.StockAllowADS?.toString() || "false", fileItem?.FixSpeed?.toString() || "0", fileItem?.ModShotDispersion?.toString() || "0",
+                        fileItem?.Convergence?.toString() || "0", fileItem?.CanCycleSubs?.toString() || "false", fileItem?.RecoilAngle?.toString() || "0", fileItem?.StockAllowADS?.toString() || "false", fileItem?.FixSpeed?.toString() || "0", fileItem?.ModShotDispersion?.toString() || "0",
                         fileItem?.ModShotDispersion?.toString() || "0"];
                     var combinedArr = modPropertyValues.concat(serverConfItems);
                     serverItem._props.ConflictingItems = combinedArr;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BotTierTracker = exports.RaidInfoTracker = exports.EventTracker = exports.ConfigChecker = exports.Helper = void 0;
+exports.BotTierTracker = exports.RaidInfoTracker = exports.EventTracker = exports.ConfigChecker = exports.ProfileTracker = exports.Helper = void 0;
 const fs = require('fs');
 const modConfig = require("../config/config.json");
 class Helper {
@@ -80,8 +80,8 @@ class Helper {
         if (playerData?.Inventory !== undefined) {
             for (var i = 0; i < playerData.Inventory.items.length; i++) {
                 if (playerData.Inventory.items[i]._tpl === "TIER1MEDKIT" ||
-                    playerData.Inventory.items[i]._tpl === "TIER1MEDKI2" ||
-                    playerData.Inventory.items[i]._tpl === "TIER1MEDKI3" ||
+                    playerData.Inventory.items[i]._tpl === "TIER2MEDKIT" ||
+                    playerData.Inventory.items[i]._tpl === "TIER3MEDKIT" ||
                     playerData.Inventory.items[i]._tpl === "SUPERBOTMEDKIT") {
                     playerData.Inventory.items[i]._tpl = "5755356824597772cb798962";
                     playerData.Inventory.items[i].upd.MedKit.HpResource = 100;
@@ -115,6 +115,10 @@ class Helper {
     }
 }
 exports.Helper = Helper;
+class ProfileTracker {
+}
+exports.ProfileTracker = ProfileTracker;
+ProfileTracker.level = 1;
 class ConfigChecker {
 }
 exports.ConfigChecker = ConfigChecker;

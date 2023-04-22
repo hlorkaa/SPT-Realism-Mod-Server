@@ -23,6 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Main = void 0;
 const ConfigTypes_1 = require("C:/snapshot/project/obj/models/enums/ConfigTypes");
 const ContextVariableType_1 = require("C:/snapshot/project/obj/context/ContextVariableType");
 ;
@@ -106,13 +107,16 @@ class Main {
         const locationGenerator = container.resolve("LocationGenerator");
         const lootGenerator = container.resolve("LootGenerator");
         const itemBaseClassService = container.resolve("ItemBaseClassService");
+        const durabilityLimitsHelper = container.resolve("DurabilityLimitsHelper");
+        const appContext = container.resolve("ApplicationContext");
         const ragFairCallback = new traders_1.RagCallback(httpResponse, jsonUtil, ragfairServer, ragfairController, configServer);
         const traderRefersh = new traders_1.TraderRefresh(logger, jsonUtil, mathUtil, timeUtil, databaseServer, profileHelper, assortHelper, paymentHelper, ragfairAssortGenerator, ragfairOfferGenerator, traderAssortService, localisationService, traderPurchasePefrsisterService, traderHelper, fenceService, configServer);
         const _botWepGen = new bot_gen_1.BotWepGen(jsonUtil, logger, hashUtil, databaseServer, itemHelper, weightedRandomHelper, botGeneratorHelper, randomUtil, configServer, botWeaponGeneratorHelper, botWeaponModLimitService, botEquipmentModGenerator, localisationService, inventoryMagGenComponents);
-        const _botModGen = new bot_gen_1.BotGenHelper(logger, jsonUtil, hashUtil, randomUtil, probabilityHelper, databaseServer, itemHelper, botEquipmentFilterService, itemBaseClassService, itemFilterService, profileHelper, botWeaponModLimitService, botHelper, botGeneratorHelper, botWeaponGeneratorHelper, localisationService, botEquipmentModPoolService, configServer);
+        const _botModGen = new bot_gen_1.BotEquipGenHelper(logger, jsonUtil, hashUtil, randomUtil, probabilityHelper, databaseServer, itemHelper, botEquipmentFilterService, itemBaseClassService, itemFilterService, profileHelper, botWeaponModLimitService, botHelper, botGeneratorHelper, botWeaponGeneratorHelper, localisationService, botEquipmentModPoolService, configServer);
         const botLootGen = new bot_loot_serv_1.BotLooGen(logger, hashUtil, randomUtil, itemHelper, databaseServer, handbookHelper, botGeneratorHelper, botWeaponGenerator, botWeaponGeneratorHelper, botLootCacheService, localisationService, configServer);
         const genBotLvl = new bot_gen_1.GenBotLvl(logger, randomUtil, databaseServer);
-        const airdropController = new airdrops_1.AirdropLootgen(jsonUtil, hashUtil, logger, locationGenerator, localisationService, lootGenerator, databaseServer, timeUtil, configServer);
+        const airdropController = new airdrops_1.AirdropLootgen(jsonUtil, hashUtil, weightedRandomHelper, logger, locationGenerator, localisationService, lootGenerator, databaseServer, timeUtil, configServer);
+        const myBotGenHelper = new bot_gen_1.BotGenHelper(logger, randomUtil, databaseServer, durabilityLimitsHelper, itemHelper, appContext, localisationService, configServer);
         const flea = new fleamarket_1.FleamarketConfig(logger, fleaConf, modConfig, custFleaBlacklist);
         flea.loadFleaConfig();
         const router = container.resolve("DynamicRouterModService");
@@ -142,8 +146,8 @@ class Main {
                 };
             }, { frequency: "Always" });
             container.afterResolution("BotLootGenerator", (_t, result) => {
-                result.generateLoot = (sessionId, templateInventory, itemCounts, isPmc, botRole, botInventory, equipmentChances, botLevel) => {
-                    return botLootGen.genLoot(sessionId, templateInventory, itemCounts, isPmc, botRole, botInventory, equipmentChances, botLevel);
+                result.generateLoot = (sessionId, botJsonTemplate, isPmc, botRole, botInventory, botLevel) => {
+                    return botLootGen.genLoot(sessionId, botJsonTemplate, isPmc, botRole, botInventory, botLevel);
                 };
             }, { frequency: "Always" });
             container.afterResolution("BotLevelGenerator", (_t, result) => {
@@ -151,14 +155,17 @@ class Main {
                     return genBotLvl.genBotLvl(levelDetails, botGenerationDetails, bot);
                 };
             }, { frequency: "Always" });
-        }
-        if (modConfig.randomize_trader_prices == true || modConfig.randomize_trader_stock == true || modConfig.randomize_trader_ll == true) {
-            container.afterResolution("TraderAssortHelper", (_t, result) => {
-                result.resetExpiredTrader = (trader) => {
-                    return traderRefersh.myResetExpiredTrader(trader);
+            container.afterResolution("BotGeneratorHelper", (_t, result) => {
+                result.generateExtraPropertiesForItem = (itemTemplate, botRole = null) => {
+                    return myBotGenHelper.myGenerateExtraPropertiesForItem(itemTemplate, botRole);
                 };
             }, { frequency: "Always" });
         }
+        container.afterResolution("TraderAssortHelper", (_t, result) => {
+            result.resetExpiredTrader = (trader) => {
+                return traderRefersh.myResetExpiredTrader(trader);
+            };
+        }, { frequency: "Always" });
         if (modConfig.randomize_trader_stock == true) {
             container.afterResolution("RagfairCallbacks", (_t, result) => {
                 result.search = (url, info, sessionID) => {
@@ -193,6 +200,7 @@ class Main {
                     let level = 1;
                     if (pmcData?.Info?.Level !== undefined) {
                         level = pmcData.Info.Level;
+                        helper_1.ProfileTracker.level = level;
                     }
                     try {
                         if (modConfig.backup_profiles == true) {
@@ -229,8 +237,12 @@ class Main {
                             randomizeTraderAssort.adjustTraderStockAtServerStart();
                         }
                         clientValidateCount += 1;
+                        const traders = container.resolve("RagfairServer").getUpdateableTraders();
+                        for (let traderID in traders) {
+                            ragfairOfferGenerator.generateFleaOffersForTrader(traders[traderID]);
+                        }
                         if (modConfig.tiered_flea == true) {
-                            this.updateFlea(logger, tieredFlea, ragfairOfferGenerator, container, arrays, level);
+                            tieredFlea.updateFlea(logger, ragfairOfferGenerator, container, arrays, level);
                         }
                         if (modConfig.boss_spawns == true) {
                             this.setBossSpawnChance(postLoadTables.locations, level);
@@ -393,7 +405,7 @@ class Main {
                     }
                     try {
                         if (modConfig.tiered_flea == true) {
-                            this.updateFlea(logger, tieredFlea, ragfairOfferGenerator, container, arrays, level);
+                            tieredFlea.updateFlea(logger, ragfairOfferGenerator, container, arrays, level);
                         }
                         player.correctNegativeHP(pmcData);
                         if (modConfig.realistic_player_health == true) {
@@ -499,6 +511,7 @@ class Main {
         this.dllChecker(logger, modConfig);
         if (modConfig.recoil_attachment_overhaul == true) {
             itemCloning.createCustomWeapons();
+            itemCloning.createCustomAttachments();
         }
         // codegen.attTemplatesCodeGen();
         // codegen.weapTemplatesCodeGen();
@@ -569,7 +582,7 @@ class Main {
         if (modConfig.headset_changes) {
             gear.loadHeadsetTweaks();
         }
-        if (modConfig.remove_fir_req == true) {
+        if (modConfig.remove_quest_fir_req == true) {
             quests.removeFIRQuestRequire();
         }
         //traders
@@ -636,62 +649,6 @@ class Main {
             logger.info("Realism Mod: Profile Checked");
         }
     }
-    fleaHelper(fetchTier, ragfairOfferGen, container) {
-        const offers = container.resolve("RagfairOfferService").getOffers();
-        const traders = container.resolve("RagfairServer").getUpdateableTraders();
-        for (let o in offers) {
-            container.resolve("RagfairOfferService").removeOfferById(offers[o]._id);
-        }
-        fetchTier();
-        ragfairOfferGen.generateDynamicOffers();
-        for (let traderID in traders) {
-            ragfairOfferGen.generateFleaOffersForTrader(traders[traderID]);
-        }
-    }
-    updateFlea(logger, flea, ragfairOfferGen, container, arrays, level) {
-        if (level === undefined) {
-            this.fleaHelper(flea.flea0.bind(flea), ragfairOfferGen, container);
-            logger.info("Realism Mod: Fleamarket Tier Set To Default (tier 0)");
-        }
-        if (level !== undefined) {
-            if (level >= 0 && level < 5) {
-                this.fleaHelper(flea.flea0.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism mod: Fleamarket Locked At Tier 0");
-            }
-            if (level >= 5 && level < 10) {
-                this.fleaHelper(flea.flea1.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 1 Unlocked");
-            }
-            if (level >= 10 && level < 15) {
-                this.fleaHelper(flea.flea2.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 2 Unlocked");
-            }
-            if (level >= 15 && level < 20) {
-                this.fleaHelper(flea.flea3.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 3 Unlocked");
-            }
-            if (level >= 20 && level < 25) {
-                this.fleaHelper(flea.flea4.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 4 Unlocked");
-            }
-            if (level >= 25 && level < 30) {
-                this.fleaHelper(flea.flea5.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 5 Unlocked");
-            }
-            if (level >= 30 && level < 35) {
-                this.fleaHelper(flea.flea6.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 6 Unlocked");
-            }
-            if (level >= 35 && level < 40) {
-                this.fleaHelper(flea.flea7.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 7 Unlocked");
-            }
-            if (level >= 40) {
-                this.fleaHelper(flea.fleaFullUnlock.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Unlocked");
-            }
-        }
-    }
     setBossSpawnChance(mapDB, level) {
         if (level >= 0 && level < 5) {
             this.bossSpawnHelper(mapDB, 1);
@@ -728,11 +685,11 @@ class Main {
                     let chance = mapDB[i].base.BossLocationSpawn[k].BossChance;
                     if (mapDB[i].base.BossLocationSpawn[k]?.TriggerId !== undefined && mapDB[i].base.BossLocationSpawn[k]?.TriggerId !== "") {
                         chance = Math.round(mapDB[i].base.BossLocationSpawn[k].BossChance * chanceMulti * 2);
-                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.min(chance, 100);
+                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.max(10, Math.min(chance, 100));
                     }
                     else {
                         chance = Math.round(mapDB[i].base.BossLocationSpawn[k].BossChance * chanceMulti);
-                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.min(chance, 100);
+                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.max(1, Math.min(chance, 100));
                     }
                 }
             }
@@ -914,7 +871,6 @@ class Main {
                 logger.warning("Realism Mod: Bots Are In Test Mode");
             }
             if (config.bot_testing == false) {
-                this.getBotTier(pmcData, bots, helper);
                 if (pmcData.Info.Level >= 0 && pmcData.Info.Level < 15) {
                     bots.botConfig1();
                 }
@@ -924,6 +880,7 @@ class Main {
                 if (pmcData.Info.Level >= 26) {
                     bots.botConfig3();
                 }
+                this.getBotTier(pmcData, bots, helper);
                 if (config.logEverything == true) {
                     logger.info("Realism Mod: Bot Tiers Have Been Set");
                 }
@@ -934,4 +891,5 @@ class Main {
         }
     }
 }
+exports.Main = Main;
 module.exports = { mod: new Main() };

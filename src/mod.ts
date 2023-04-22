@@ -18,8 +18,8 @@ import { BotWeaponGenerator } from "@spt-aki/generators/BotWeaponGenerator";
 import { BotGeneratorHelper } from "@spt-aki/helpers/BotGeneratorHelper";
 import { WeightedRandomHelper } from "@spt-aki/helpers/WeightedRandomHelper";
 import { JsonUtil } from "@spt-aki/utils/JsonUtil";
-import { Chances, Inventory, ItemMinMax, Mods, ModsChances } from "@spt-aki/models/eft/common/tables/IBotType";
-import { Item } from "@spt-aki/models/eft/common/tables/IItem";
+import { Chances, IBotType, Inventory, ItemMinMax, Mods, ModsChances } from "@spt-aki/models/eft/common/tables/IBotType";
+import { Item, Upd } from "@spt-aki/models/eft/common/tables/IItem";
 import { ITemplateItem } from "@spt-aki/models/eft/common/tables/ITemplateItem";
 import { RagfairOfferService } from "@spt-aki/services/RagfairOfferService";
 import { ItemHelper } from "@spt-aki/helpers/ItemHelper";
@@ -81,13 +81,13 @@ import { Armor } from "./armor";
 import { AttatchmentBase as AttachmentBase } from "./attatchment_base";
 import { AttatchmentStats as AttachmentStats } from "./attatchment_stats";
 import { FleamarketConfig, TieredFlea, FleamarketGlobal } from "./fleamarket";
-import { ConfigChecker, EventTracker, Helper, RaidInfoTracker } from "./helper"
+import { ConfigChecker, EventTracker, Helper, ProfileTracker, RaidInfoTracker } from "./helper"
 import { Arrays } from "./arrays"
 import { Meds } from "./meds";
 import { Player } from "./player"
 import { WeaponsGlobals } from "./weapons_globals"
 import { Bots } from "./bots";
-import { BotGenHelper, BotWepGen, GenBotLvl } from "./bot_gen";
+import { BotEquipGenHelper, BotGenHelper, BotWepGen, GenBotLvl } from "./bot_gen";
 import { BotLooGen } from "./bot_loot_serv";
 import { _Items } from "./items";
 import { CodeGen } from "./code_gen";
@@ -109,6 +109,7 @@ import { OldAmmo } from "./ammo_old";
 import { OldArmor } from "./armor_old";
 import { IAkiProfile } from "@spt-aki/models/eft/profile/IAkiProfile";
 import { ItemBaseClassService } from "@spt-aki/services/ItemBaseClassService";
+import { DurabilityLimitsHelper } from "@spt-aki/helpers/DurabilityLimitsHelper";
 
 const fs = require('fs');
 const custFleaBlacklist = require("../db/traders/ragfair/blacklist.json");
@@ -122,7 +123,7 @@ const pmcTypes = require("../db/bots/pmcTypes.json");
 
 var clientValidateCount = 0;
 
-class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiLoadModAsync {
+export class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiLoadModAsync {
 
     private path: { resolve: (arg0: string) => any; };
     private modLoader: PreAkiModLoader;
@@ -173,15 +174,18 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
         const locationGenerator = container.resolve<LocationGenerator>("LocationGenerator");
         const lootGenerator = container.resolve<LootGenerator>("LootGenerator");
         const itemBaseClassService = container.resolve<ItemBaseClassService>("ItemBaseClassService");
+        const durabilityLimitsHelper = container.resolve<DurabilityLimitsHelper>("DurabilityLimitsHelper");
+        const appContext = container.resolve<ApplicationContext>("ApplicationContext");
 
 
         const ragFairCallback = new RagCallback(httpResponse, jsonUtil, ragfairServer, ragfairController, configServer);
         const traderRefersh = new TraderRefresh(logger, jsonUtil, mathUtil, timeUtil, databaseServer, profileHelper, assortHelper, paymentHelper, ragfairAssortGenerator, ragfairOfferGenerator, traderAssortService, localisationService, traderPurchasePefrsisterService, traderHelper, fenceService, configServer);
         const _botWepGen = new BotWepGen(jsonUtil, logger, hashUtil, databaseServer, itemHelper, weightedRandomHelper, botGeneratorHelper, randomUtil, configServer, botWeaponGeneratorHelper, botWeaponModLimitService, botEquipmentModGenerator, localisationService, inventoryMagGenComponents);
-        const _botModGen = new BotGenHelper(logger, jsonUtil, hashUtil, randomUtil, probabilityHelper, databaseServer, itemHelper, botEquipmentFilterService, itemBaseClassService, itemFilterService, profileHelper, botWeaponModLimitService, botHelper, botGeneratorHelper, botWeaponGeneratorHelper, localisationService, botEquipmentModPoolService, configServer);
+        const _botModGen = new BotEquipGenHelper(logger, jsonUtil, hashUtil, randomUtil, probabilityHelper, databaseServer, itemHelper, botEquipmentFilterService, itemBaseClassService, itemFilterService, profileHelper, botWeaponModLimitService, botHelper, botGeneratorHelper, botWeaponGeneratorHelper, localisationService, botEquipmentModPoolService, configServer);
         const botLootGen = new BotLooGen(logger, hashUtil, randomUtil, itemHelper, databaseServer, handbookHelper, botGeneratorHelper, botWeaponGenerator, botWeaponGeneratorHelper, botLootCacheService, localisationService, configServer);
         const genBotLvl = new GenBotLvl(logger, randomUtil, databaseServer);
-        const airdropController = new AirdropLootgen(jsonUtil, hashUtil, logger, locationGenerator, localisationService, lootGenerator, databaseServer, timeUtil, configServer)
+        const airdropController = new AirdropLootgen(jsonUtil, hashUtil, weightedRandomHelper, logger, locationGenerator, localisationService, lootGenerator, databaseServer, timeUtil, configServer)
+        const myBotGenHelper = new BotGenHelper(logger, randomUtil, databaseServer, durabilityLimitsHelper, itemHelper, appContext, localisationService, configServer);
 
         const flea = new FleamarketConfig(logger, fleaConf, modConfig, custFleaBlacklist);
         flea.loadFleaConfig();
@@ -221,8 +225,8 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
             }, { frequency: "Always" });
 
             container.afterResolution("BotLootGenerator", (_t, result: BotLootGenerator) => {
-                result.generateLoot = (sessionId: string, templateInventory: Inventory, itemCounts: ItemMinMax, isPmc: boolean, botRole: string, botInventory: PmcInventory, equipmentChances: Chances, botLevel: number): void => {
-                    return botLootGen.genLoot(sessionId, templateInventory, itemCounts, isPmc, botRole, botInventory, equipmentChances, botLevel);
+                result.generateLoot = (sessionId: string, botJsonTemplate: IBotType, isPmc: boolean, botRole: string, botInventory: PmcInventory, botLevel: number): void => {
+                    return botLootGen.genLoot(sessionId, botJsonTemplate, isPmc, botRole, botInventory, botLevel);
                 }
             }, { frequency: "Always" });
 
@@ -231,16 +235,20 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
                     return genBotLvl.genBotLvl(levelDetails, botGenerationDetails, bot);
                 }
             }, { frequency: "Always" });
-        }
 
-
-        if (modConfig.randomize_trader_prices == true || modConfig.randomize_trader_stock == true || modConfig.randomize_trader_ll == true) {
-            container.afterResolution("TraderAssortHelper", (_t, result: TraderAssortHelper) => {
-                result.resetExpiredTrader = (trader: ITrader): void => {
-                    return traderRefersh.myResetExpiredTrader(trader);
+            container.afterResolution("BotGeneratorHelper", (_t, result: BotGeneratorHelper) => {
+                result.generateExtraPropertiesForItem = (itemTemplate: ITemplateItem, botRole: string = null): { upd?: Upd } => {
+                    return myBotGenHelper.myGenerateExtraPropertiesForItem(itemTemplate, botRole);
                 }
             }, { frequency: "Always" });
         }
+
+        container.afterResolution("TraderAssortHelper", (_t, result: TraderAssortHelper) => {
+            result.resetExpiredTrader = (trader: ITrader): void => {
+                return traderRefersh.myResetExpiredTrader(trader);
+            }
+        }, { frequency: "Always" });
+
 
         if (modConfig.randomize_trader_stock == true) {
             container.afterResolution("RagfairCallbacks", (_t, result: RagfairCallbacks) => {
@@ -286,6 +294,7 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
 
                         if (pmcData?.Info?.Level !== undefined) {
                             level = pmcData.Info.Level;
+                            ProfileTracker.level = level;
                         }
 
                         try {
@@ -333,8 +342,13 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
                             }
                             clientValidateCount += 1;
 
+                            const traders = container.resolve<RagfairServer>("RagfairServer").getUpdateableTraders();
+                            for (let traderID in traders) {
+                                ragfairOfferGenerator.generateFleaOffersForTrader(traders[traderID]);
+                            }
+                
                             if (modConfig.tiered_flea == true) {
-                                this.updateFlea(logger, tieredFlea, ragfairOfferGenerator, container, arrays, level);
+                                tieredFlea.updateFlea(logger, ragfairOfferGenerator, container, arrays, level);
                             }
                             if (modConfig.boss_spawns == true) {
                                 this.setBossSpawnChance(postLoadTables.locations, level);
@@ -537,7 +551,7 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
                         try {
 
                             if (modConfig.tiered_flea == true) {
-                                this.updateFlea(logger, tieredFlea, ragfairOfferGenerator, container, arrays, level);
+                                tieredFlea.updateFlea(logger, ragfairOfferGenerator, container, arrays, level);
                             }
 
                             player.correctNegativeHP(pmcData);
@@ -562,7 +576,7 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
             "pmc"
         );
     }
-
+ 
     private backupProfile(profileData: IAkiProfile, logger: ILogger) {
         const profileFileData = JSON.stringify(profileData, null, 4)
         var index = 0;
@@ -666,6 +680,7 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
 
         if (modConfig.recoil_attachment_overhaul == true) {
             itemCloning.createCustomWeapons();
+            itemCloning.createCustomAttachments();
         }
 
         // codegen.attTemplatesCodeGen();
@@ -759,7 +774,7 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
             gear.loadHeadsetTweaks();
         }
 
-        if (modConfig.remove_fir_req == true) {
+        if (modConfig.remove_quest_fir_req == true) {
             quests.removeFIRQuestRequire();
         }
 
@@ -835,102 +850,42 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
         }
     }
 
-    private fleaHelper(fetchTier: Function, ragfairOfferGen: RagfairOfferGenerator, container: DependencyContainer) {
 
-        const offers = container.resolve<RagfairOfferService>("RagfairOfferService").getOffers();
-        const traders = container.resolve<RagfairServer>("RagfairServer").getUpdateableTraders();
-
-        for (let o in offers) {
-            container.resolve<RagfairOfferService>("RagfairOfferService").removeOfferById(offers[o]._id);
-        }
-
-        fetchTier();
-        ragfairOfferGen.generateDynamicOffers();
-        for (let traderID in traders) {
-            ragfairOfferGen.generateFleaOffersForTrader(traders[traderID]);
-        }
-    }
-
-    private updateFlea(logger: ILogger, flea: TieredFlea, ragfairOfferGen: RagfairOfferGenerator, container: DependencyContainer, arrays: Arrays, level: number) {
-
-        if (level === undefined) {
-            this.fleaHelper(flea.flea0.bind(flea), ragfairOfferGen, container);
-            logger.info("Realism Mod: Fleamarket Tier Set To Default (tier 0)");
-        }
-        if (level !== undefined) {
-            if (level >= 0 && level < 5) {
-                this.fleaHelper(flea.flea0.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism mod: Fleamarket Locked At Tier 0");
-            }
-            if (level >= 5 && level < 10) {
-                this.fleaHelper(flea.flea1.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 1 Unlocked");
-            }
-            if (level >= 10 && level < 15) {
-                this.fleaHelper(flea.flea2.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 2 Unlocked");
-            }
-            if (level >= 15 && level < 20) {
-                this.fleaHelper(flea.flea3.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 3 Unlocked");
-            }
-            if (level >= 20 && level < 25) {
-                this.fleaHelper(flea.flea4.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 4 Unlocked");
-            }
-            if (level >= 25 && level < 30) {
-                this.fleaHelper(flea.flea5.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 5 Unlocked");
-            }
-            if (level >= 30 && level < 35) {
-                this.fleaHelper(flea.flea6.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 6 Unlocked");
-            }
-            if (level >= 35 && level < 40) {
-                this.fleaHelper(flea.flea7.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Tier 7 Unlocked");
-            }
-            if (level >= 40) {
-                this.fleaHelper(flea.fleaFullUnlock.bind(flea), ragfairOfferGen, container);
-                logger.info("Realism Mod: Fleamarket Unlocked");
-            }
-        }
-    }
 
     private setBossSpawnChance(mapDB: ILocations, level: number) {
 
         if (level >= 0 && level < 5) {
-            this.bossSpawnHelper(mapDB, 0.01);
-        }
-        if (level >= 5 && level < 10) {
             this.bossSpawnHelper(mapDB, 0.05);
         }
-        if (level >= 10 && level < 15) {
+        if (level >= 5 && level < 10) {
             this.bossSpawnHelper(mapDB, 0.1);
         }
-        if (level >= 15 && level < 20) {
+        if (level >= 10 && level < 15) {
             this.bossSpawnHelper(mapDB, 0.2);
         }
-        if (level >= 20 && level < 25) {
+        if (level >= 15 && level < 20) {
             this.bossSpawnHelper(mapDB, 0.4);
         }
+        if (level >= 20 && level < 25) {
+            this.bossSpawnHelper(mapDB, 0.5);
+        }
         if (level >= 25 && level < 30) {
-            this.bossSpawnHelper(mapDB, 0.6);
+            this.bossSpawnHelper(mapDB, 0.7);
         }
         if (level >= 30 && level < 35) {
-            this.bossSpawnHelper(mapDB, 0.8);
-        }
-        if (level >= 35 && level < 40) {
             this.bossSpawnHelper(mapDB, 0.9);
         }
-        if (level >= 40 && level < 45) {
+        if (level >= 35 && level < 40) {
             this.bossSpawnHelper(mapDB, 1);
         }
-        if (level >= 45 && level < 50) {
+        if (level >= 40 && level < 45) {
             this.bossSpawnHelper(mapDB, 1.1);
         }
         if (level >= 45 && level < 50) {
-            this.bossSpawnHelper(mapDB, 1.1);
+            this.bossSpawnHelper(mapDB, 1.2);
+        }
+        if (level > 50) {
+            this.bossSpawnHelper(mapDB, 1.3);
         }
     }
 
@@ -941,11 +896,11 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
                     let chance = mapDB[i].base.BossLocationSpawn[k].BossChance;
                     if (mapDB[i].base.BossLocationSpawn[k]?.TriggerId !== undefined && mapDB[i].base.BossLocationSpawn[k]?.TriggerId !== "") {
                         chance = Math.round(mapDB[i].base.BossLocationSpawn[k].BossChance * chanceMulti * 2);
-                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.min(chance, 100);
+                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.max(10, Math.min(chance, 100));
                     }
                     else {
                         chance = Math.round(mapDB[i].base.BossLocationSpawn[k].BossChance * chanceMulti);
-                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.min(chance, 100);
+                        mapDB[i].base.BossLocationSpawn[k].BossChance = Math.max(1, Math.min(chance, 100));
                     }
                 }
             }
@@ -1133,7 +1088,6 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
                 logger.warning("Realism Mod: Bots Are In Test Mode");
             }
             if (config.bot_testing == false) {
-                this.getBotTier(pmcData, bots, helper);
                 if (pmcData.Info.Level >= 0 && pmcData.Info.Level < 15) {
                     bots.botConfig1();
                 }
@@ -1143,6 +1097,7 @@ class Main implements IPreAkiLoadMod, IPostDBLoadMod, IPostAkiLoadMod, IPostAkiL
                 if (pmcData.Info.Level >= 26) {
                     bots.botConfig3();
                 }
+                this.getBotTier(pmcData, bots, helper);
                 if (config.logEverything == true) {
                     logger.info("Realism Mod: Bot Tiers Have Been Set");
                 }

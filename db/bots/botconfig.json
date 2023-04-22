@@ -7,15 +7,16 @@
         "6087e570b998180e9f76dc24"
     ],
     "maxBotCap": {
-        "factory": 20,
-        "customs": 30,
+        "factory4_day": 15,
+        "factory4_night": 15,
+        "bigmap": 30,
         "woods": 30,
         "shoreline": 30,
         "lighthouse": 20,
-        "reservebase": 25,
+        "rezervbase": 25,
         "interchange": 25,
         "laboratory": 20,
-        "streets of tarkov": 30,
+        "tarkovstreets": 30,
         "default": 25
     },
     "lootNValue1": {
@@ -91,8 +92,8 @@
         },
         "assault": {
             "armor": {
-                "maxDelta": 20,
-                "minDelta": 5,
+                "maxDelta": 10,
+                "minDelta": 0,
                 "minLimitPercent": 15
             },
             "weapon": {
@@ -249,8 +250,8 @@
         },
         "assault": {
             "armor": {
-                "maxDelta": 20,
-                "minDelta": 5,
+                "maxDelta": 10,
+                "minDelta": 0,
                 "minLimitPercent": 15
             },
             "weapon": {
@@ -407,8 +408,8 @@
         },
         "assault": {
             "armor": {
-                "maxDelta": 20,
-                "minDelta": 5,
+                "maxDelta": 10,
+                "minDelta": 0,
                 "minLimitPercent": 15
             },
             "weapon": {
@@ -514,7 +515,7 @@
                 "569668774bdc2da2298b4568": 100
             }
         },
-        "isUsec": 50,
+        "isUsec": 49,
         "difficulty": "Hard",
         "maxBackpackLootTotalRub": 75000,
         "maxPocketLootTotalRub": 25000,
@@ -550,7 +551,7 @@
                 "569668774bdc2da2298b4568": 200
             }
         },
-        "isUsec": 50,
+        "isUsec": 49,
         "difficulty": "Hard",
         "maxBackpackLootTotalRub": 90000,
         "maxPocketLootTotalRub": 35000,
@@ -586,7 +587,7 @@
                 "569668774bdc2da2298b4568": 300
             }
         },
-        "isUsec": 50,
+        "isUsec": 49,
         "difficulty": "Impossible",
         "maxBackpackLootTotalRub": 150000,
         "maxPocketLootTotalRub": 50000,
